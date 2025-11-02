@@ -9,6 +9,7 @@ const geist = Geist({ subsets: ["latin"] })
 const geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://faisalhabib.com"),
   title: "Faisal Habib - Full Stack Developer & AI Specialist",
   description:
     "Portfolio of Faisal Habib, a full-stack developer specializing in React.js, Next.js, AI integration, and web development solutions.",
