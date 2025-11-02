@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 export default function LiquidEther({
@@ -51,6 +51,8 @@ export default function LiquidEther({
   const intersectionObserverRef = useRef<IntersectionObserver | null>(null);
   const isVisibleRef = useRef(true);
   const resizeRafRef = useRef<number | null>(null);
+  const [hasError, setHasError] = useState(false);
+  const contextLostRef = useRef(false);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -104,19 +106,40 @@ export default function LiquidEther({
       clock: THREE.Clock | null = null;
 
       init(container: HTMLElement) {
-        this.container = container;
-        this.pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-        this.resize();
-        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        this.renderer.autoClear = false;
-        this.renderer.setClearColor(new THREE.Color(0x000000), 0);
-        this.renderer.setPixelRatio(this.pixelRatio);
-        this.renderer.setSize(this.width, this.height);
-        this.renderer.domElement.style.width = '100%';
-        this.renderer.domElement.style.height = '100%';
-        this.renderer.domElement.style.display = 'block';
-        this.clock = new THREE.Clock();
-        this.clock.start();
+        try {
+          this.container = container;
+          this.pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+          this.resize();
+          this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, failIfMajorPerformanceCaveat: false });
+          this.renderer.autoClear = false;
+          this.renderer.setClearColor(new THREE.Color(0x000000), 0);
+          this.renderer.setPixelRatio(this.pixelRatio);
+          this.renderer.setSize(this.width, this.height);
+          this.renderer.domElement.style.width = '100%';
+          this.renderer.domElement.style.height = '100%';
+          this.renderer.domElement.style.display = 'block';
+
+          // Add WebGL context loss handlers
+          const canvas = this.renderer.domElement;
+          canvas.addEventListener('webglcontextlost', (event) => {
+            event.preventDefault();
+            console.warn('WebGL context lost. Attempting to recover...');
+            contextLostRef.current = true;
+          }, false);
+
+          canvas.addEventListener('webglcontextrestored', () => {
+            console.log('WebGL context restored.');
+            contextLostRef.current = false;
+            // Context restoration is handled by Three.js internally
+          }, false);
+
+          this.clock = new THREE.Clock();
+          this.clock.start();
+        } catch (error) {
+          console.error('Failed to initialize WebGL renderer:', error);
+          setHasError(true);
+          throw error;
+        }
       }
       resize() {
         if (!this.container) return;
@@ -522,13 +545,19 @@ export default function LiquidEther({
         this.uniforms = this.props.material?.uniforms;
       }
       init() {
-        this.scene = new THREE.Scene();
-        this.camera = new THREE.Camera();
-        if (this.uniforms) {
-          this.material = new THREE.RawShaderMaterial(this.props.material);
-          this.geometry = new THREE.PlaneGeometry(2.0, 2.0);
-          this.plane = new THREE.Mesh(this.geometry, this.material);
-          this.scene.add(this.plane);
+        try {
+          this.scene = new THREE.Scene();
+          this.camera = new THREE.Camera();
+          if (this.uniforms) {
+            this.material = new THREE.RawShaderMaterial(this.props.material);
+            this.geometry = new THREE.PlaneGeometry(2.0, 2.0);
+            this.plane = new THREE.Mesh(this.geometry, this.material);
+            this.scene.add(this.plane);
+          }
+        } catch (error) {
+          console.error('Failed to create shader material:', error);
+          setHasError(true);
+          throw error;
         }
       }
       update() {
@@ -809,18 +838,24 @@ export default function LiquidEther({
         return isIOS ? THREE.HalfFloatType : THREE.FloatType;
       }
       createAllFBO() {
-        const type = this.getFloatType();
-        const opts = {
-          type,
-          depthBuffer: false,
-          stencilBuffer: false,
-          minFilter: THREE.LinearFilter,
-          magFilter: THREE.LinearFilter,
-          wrapS: THREE.ClampToEdgeWrapping,
-          wrapT: THREE.ClampToEdgeWrapping
-        };
-        for (let key in this.fbos) {
-          this.fbos[key] = new THREE.WebGLRenderTarget(this.fboSize.x, this.fboSize.y, opts);
+        try {
+          const type = this.getFloatType();
+          const opts = {
+            type,
+            depthBuffer: false,
+            stencilBuffer: false,
+            minFilter: THREE.LinearFilter,
+            magFilter: THREE.LinearFilter,
+            wrapS: THREE.ClampToEdgeWrapping,
+            wrapT: THREE.ClampToEdgeWrapping
+          };
+          for (let key in this.fbos) {
+            this.fbos[key] = new THREE.WebGLRenderTarget(this.fboSize.x, this.fboSize.y, opts);
+          }
+        } catch (error) {
+          console.error('Failed to create WebGL framebuffers:', error);
+          setHasError(true);
+          throw error;
         }
       }
       createShaderPass() {
@@ -1007,15 +1042,31 @@ export default function LiquidEther({
         if (this.output) this.output.resize();
       }
       render() {
-        if (this.autoDriver) this.autoDriver.update();
-        Mouse.update();
-        Common.update();
-        if (this.output) this.output.update();
+        try {
+          if (contextLostRef.current) {
+            console.warn('Skipping render: WebGL context is lost');
+            return;
+          }
+          if (this.autoDriver) this.autoDriver.update();
+          Mouse.update();
+          Common.update();
+          if (this.output) this.output.update();
+        } catch (error) {
+          console.error('Error during render:', error);
+          setHasError(true);
+          this.pause();
+        }
       }
       loop() {
         if (!this.running) return;
-        this.render();
-        rafRef.current = requestAnimationFrame(this._loop);
+        try {
+          this.render();
+          rafRef.current = requestAnimationFrame(this._loop);
+        } catch (error) {
+          console.error('Error in animation loop:', error);
+          setHasError(true);
+          this.pause();
+        }
       }
       start() {
         if (this.running) return;
@@ -1049,41 +1100,48 @@ export default function LiquidEther({
     container.style.position = container.style.position || 'relative';
     container.style.overflow = container.style.overflow || 'hidden';
 
-    const webgl = new WebGLManager({
-      $wrapper: container,
-      autoDemo,
-      autoSpeed,
-      autoIntensity,
-      takeoverDuration,
-      autoResumeDelay,
-      autoRampDuration
-    });
-    webglRef.current = webgl;
-
-    const applyOptionsFromProps = () => {
-      if (!webglRef.current) return;
-      const sim = webglRef.current.output?.simulation;
-      if (!sim) return;
-      const prevRes = sim.options.resolution;
-      Object.assign(sim.options, {
-        mouse_force: mouseForce,
-        cursor_size: cursorSize,
-        isViscous,
-        viscous,
-        iterations_viscous: iterationsViscous,
-        iterations_poisson: iterationsPoisson,
-        dt,
-        BFECC,
-        resolution,
-        isBounce
+    let webgl;
+    try {
+      webgl = new WebGLManager({
+        $wrapper: container,
+        autoDemo,
+        autoSpeed,
+        autoIntensity,
+        takeoverDuration,
+        autoResumeDelay,
+        autoRampDuration
       });
-      if (resolution !== prevRes) {
-        sim.resize();
-      }
-    };
-    applyOptionsFromProps();
+      webglRef.current = webgl;
 
-    webgl.start();
+      const applyOptionsFromProps = () => {
+        if (!webglRef.current) return;
+        const sim = webglRef.current.output?.simulation;
+        if (!sim) return;
+        const prevRes = sim.options.resolution;
+        Object.assign(sim.options, {
+          mouse_force: mouseForce,
+          cursor_size: cursorSize,
+          isViscous,
+          viscous,
+          iterations_viscous: iterationsViscous,
+          iterations_poisson: iterationsPoisson,
+          dt,
+          BFECC,
+          resolution,
+          isBounce
+        });
+        if (resolution !== prevRes) {
+          sim.resize();
+        }
+      };
+      applyOptionsFromProps();
+
+      webgl.start();
+    } catch (error) {
+      console.error('Failed to initialize WebGL:', error);
+      setHasError(true);
+      return;
+    }
 
     const io = new IntersectionObserver(
       entries => {
@@ -1203,6 +1261,18 @@ export default function LiquidEther({
     autoResumeDelay,
     autoRampDuration
   ]);
+
+  // If WebGL has an error, show a fallback gradient
+  if (hasError) {
+    return (
+      <div
+        className={`w-full h-full relative overflow-hidden ${className || ''}`}
+        style={style}
+      >
+        <div className="fixed inset-0 bg-gradient-to-br from-purple-900/30 via-blue-900/20 to-cyan-900/30" />
+      </div>
+    );
+  }
 
   return (
     <div
