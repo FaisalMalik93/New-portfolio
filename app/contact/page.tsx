@@ -62,14 +62,14 @@ export default function ContactPage() {
     {
       icon: Mail,
       label: "Email",
-      value: "hello@example.com",
-      href: "mailto:hello@example.com",
+      value: "faisalmalik93939@gmail.com",
+      href: "mailto:faisalmalik93939@gmail.com",
     },
     {
       icon: MessageSquare,
       label: "Twitter",
-      value: "@yourhandle",
-      href: "https://twitter.com",
+      value: "@FaisalMali48211",
+      href: "https://x.com/FaisalMali48211?t=tVh7biYRVcqkCix_ssavlw&s=09",
     },
   ]
 
