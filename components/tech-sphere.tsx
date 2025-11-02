@@ -40,8 +40,9 @@ export function TechSphere({ technologies, radius = 150 }: TechSphereProps) {
     >
       <motion.div
         className="relative w-80 h-80"
+        style={{ transformStyle: "preserve-3d" }} // ✅ Add this line
         animate={{ rotateY: 360 }}
-        transition={{ duration: 12, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+        transition={{ duration: 20, repeat: Number.POSITIVE_INFINITY, ease: "linear"}}
       >
         {technologies.map((tech, index) => {
           const angle = angleSlice * index
@@ -55,7 +56,7 @@ export function TechSphere({ technologies, radius = 150 }: TechSphereProps) {
               style={{
                 left: "50%",
                 top: "50%",
-                transform: `translateX(calc(-50% + ${x}px)) translateZ(${z}px)`,
+                transform: `translateX(calc(-50% + ${x}px)) translateZ(${z}px) rotateY(${-angle}rad)`,
               }}
               whileHover={{ scale: 1.2 }}
             >
