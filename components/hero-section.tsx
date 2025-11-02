@@ -67,7 +67,7 @@ export default function HeroSection() {
         animate="visible"
         className="relative z-[20] max-w-4xl mx-auto px-6 text-center"
       >
-        <motion.h1 variants={itemVariants} className="text-6xl md:text-7xl font-bold mb-6 text-balance">
+        <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 text-balance leading-tight">
           <span className="gradient-text">Full Stack Developer</span>
           <br />
           <span className="text-white">& Creative Builder</span>
@@ -75,7 +75,7 @@ export default function HeroSection() {
 
         <motion.p
           variants={itemVariants}
-          className="text-xl text-white/70 mb-8 max-w-2xl mx-auto leading-relaxed text-pretty"
+          className="text-base sm:text-lg md:text-xl text-white/70 mb-8 max-w-2xl mx-auto leading-relaxed text-pretty px-4"
         >
           I craft modern web experiences with cutting-edge technologies. Specializing in Next.js, React, and interactive
           3D experiences with AI integration and automation solutions.
@@ -96,34 +96,34 @@ export default function HeroSection() {
           </Link>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="mt-16 flex gap-8 justify-center text-white/60 flex-wrap">
+        <motion.div variants={itemVariants} className="mt-12 sm:mt-16 flex gap-4 sm:gap-8 justify-center text-white/60 flex-wrap px-4">
           <motion.div
-            className="glassmorphism px-6 py-4 rounded-lg"
+            className="glassmorphism px-4 sm:px-6 py-3 sm:py-4 rounded-lg min-w-[100px]"
             whileHover={{ scale: 1.05, borderColor: "rgba(0, 212, 255, 0.5)" }}
           >
-            <p className="text-2xl font-bold gradient-text">15+</p>
-            <p className="text-sm">Projects Built</p>
+            <p className="text-xl sm:text-2xl font-bold gradient-text">15+</p>
+            <p className="text-xs sm:text-sm whitespace-nowrap">Projects Built</p>
           </motion.div>
           <motion.div
-            className="glassmorphism px-6 py-4 rounded-lg"
+            className="glassmorphism px-4 sm:px-6 py-3 sm:py-4 rounded-lg min-w-[100px]"
             whileHover={{ scale: 1.05, borderColor: "rgba(0, 212, 255, 0.5)" }}
           >
-            <p className="text-2xl font-bold gradient-text">2+</p>
-            <p className="text-sm">Years Experience</p>
+            <p className="text-xl sm:text-2xl font-bold gradient-text">2+</p>
+            <p className="text-xs sm:text-sm whitespace-nowrap">Years Experience</p>
           </motion.div>
           <motion.div
-            className="glassmorphism px-6 py-4 rounded-lg"
+            className="glassmorphism px-4 sm:px-6 py-3 sm:py-4 rounded-lg min-w-[100px]"
             whileHover={{ scale: 1.05, borderColor: "rgba(0, 212, 255, 0.5)" }}
           >
-            <p className="text-2xl font-bold gradient-text">10+</p>
-            <p className="text-sm">Technologies</p>
+            <p className="text-xl sm:text-2xl font-bold gradient-text">10+</p>
+            <p className="text-xs sm:text-sm whitespace-nowrap">Technologies</p>
           </motion.div>
         </motion.div>
       </motion.div>
 
       {/* Scroll indicator */}
       <motion.div
-        className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-[20]"
+        className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-[20] hidden sm:block"
         animate={{ y: [0, 10, 0] }}
         transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
       >

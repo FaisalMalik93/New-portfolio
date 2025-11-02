@@ -96,29 +96,29 @@ export default function ExperiencePage() {
             viewport={{ once: true, margin: "-100px" }}
             className="relative"
           >
-            {/* Timeline line */}
-            <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-cyan-500 to-purple-500" />
+            {/* Timeline line - hidden on mobile */}
+            <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-cyan-500 to-purple-500 hidden sm:block" />
 
             {/* Timeline items */}
             <div className="space-y-8">
               {experiences.map((exp, index) => (
-                <motion.div key={index} variants={itemVariants} className="ml-20">
-                  {/* Timeline dot */}
-                  <div className="absolute -left-7 top-2 w-6 h-6 rounded-full bg-black border-2 border-cyan-400 z-10" />
+                <motion.div key={index} variants={itemVariants} className="sm:ml-20">
+                  {/* Timeline dot - hidden on mobile */}
+                  <div className="absolute -left-7 top-2 w-6 h-6 rounded-full bg-black border-2 border-cyan-400 z-10 hidden sm:block" />
 
                   {/* Card */}
                   <div className="glassmorphism p-6 rounded-lg hover:border-white/30 transition-all hover:shadow-lg hover:shadow-cyan-500/20">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-start gap-3">
+                    <div className="flex flex-col sm:flex-row items-start justify-between mb-4 gap-3">
+                      <div className="flex items-start gap-3 flex-1 min-w-0">
                         <Briefcase className="text-cyan-400 mt-1 flex-shrink-0" size={20} />
-                        <div>
-                          <h3 className="text-xl font-bold text-white">{exp.role}</h3>
+                        <div className="min-w-0">
+                          <h3 className="text-lg sm:text-xl font-bold text-white break-words">{exp.role}</h3>
                           <p className="text-cyan-400 text-sm">{exp.company}</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 text-white/60 text-sm whitespace-nowrap">
-                        <Calendar size={14} />
-                        {exp.period}
+                      <div className="flex items-center gap-2 text-white/60 text-sm flex-shrink-0 self-start">
+                        <Calendar size={14} className="flex-shrink-0" />
+                        <span className="whitespace-nowrap">{exp.period}</span>
                       </div>
                     </div>
                     <p className="text-white/70 mb-4 leading-relaxed">{exp.description}</p>

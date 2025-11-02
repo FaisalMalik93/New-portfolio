@@ -149,13 +149,13 @@ export default function ContactPage() {
                       <a
                         key={method.label}
                         href={method.href}
-                        className="group glassmorphism p-6 rounded-lg hover:border-white/30 transition-all hover:shadow-lg hover:shadow-cyan-500/20"
+                        className="group glassmorphism p-6 rounded-lg hover:border-white/30 transition-all hover:shadow-lg hover:shadow-cyan-500/20 block"
                       >
                         <div className="flex items-start gap-4">
-                          <Icon className="text-cyan-400 mt-1" size={24} />
-                          <div>
-                            <p className="text-white/60 text-sm font-medium">{method.label}</p>
-                            <p className="text-white group-hover:text-cyan-400 transition-colors">{method.value}</p>
+                          <Icon className="text-cyan-400 mt-1 flex-shrink-0" size={24} />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-white/60 text-sm font-medium mb-1">{method.label}</p>
+                            <p className="text-white group-hover:text-cyan-400 transition-colors text-sm sm:text-base break-words overflow-wrap-anywhere">{method.value}</p>
                           </div>
                         </div>
                       </a>

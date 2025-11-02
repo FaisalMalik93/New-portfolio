@@ -41,7 +41,7 @@ export function TechSphere({ technologies, radius = 150 }: TechSphereProps) {
       <motion.div
         className="relative w-80 h-80"
         animate={{ rotateY: 360 }}
-        transition={{ duration: 30, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+        transition={{ duration: 12, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
       >
         {technologies.map((tech, index) => {
           const angle = angleSlice * index
@@ -51,7 +51,7 @@ export function TechSphere({ technologies, radius = 150 }: TechSphereProps) {
           return (
             <motion.div
               key={tech}
-              className="absolute w-20 h-20 flex items-center justify-center"
+              className="absolute w-24 h-24 flex items-center justify-center"
               style={{
                 left: "50%",
                 top: "50%",
@@ -59,7 +59,7 @@ export function TechSphere({ technologies, radius = 150 }: TechSphereProps) {
               }}
               whileHover={{ scale: 1.2 }}
             >
-              <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center text-white text-xs font-semibold text-center p-2 neon-glow">
+              <div className="w-20 h-20 rounded-lg bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold text-center p-3 neon-glow shadow-lg">
                 {tech}
               </div>
             </motion.div>
